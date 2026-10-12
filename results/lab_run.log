@@ -1,0 +1,11 @@
+firing   DeviceRebooted       edge-fw-01
+firing   HighLatency          wan-rtr-01
+pending  InterfaceSaturated   dist-sw-02
+pending  TargetDown           branch-ap-07
+firing   TargetDown           dr-rtr-01
+firing   TargetFlapping       branch-ap-07
+firing   UptimeBelowSLO       branch-ap-07
+firing   UptimeBelowSLO       dr-rtr-01
+if_bps core-sw-01 0.7 Mbps
+if_bps edge-fw-01 0.8 Mbps
+if_bps dist-sw-02 872.7 Mbps
