@@ -1,6 +1,6 @@
 # noc-probe-dashboard: NOC monitoring with probe exporters, Prometheus alerts and Grafana
 
-> **Lab project.** The "network devices" are simulated by `lab/devices.py` (one HTTP listener per device). The SNMP poll is **SNMP-style**: it reads IF-MIB/SYSTEM-MIB-shaped values (sysUpTime, ifInOctets, ifSpeed) as JSON over HTTP, because the box has no snmpd. The OIDs to use with a real `pysnmp` GET are noted in `nocprobe/probes.py`.
+> **Lab project.** The "network devices" are simulated by `lab/devices.py` (one HTTP listener per device). The SNMP poll is **SNMP-style**: it reads IF-MIB/SYSTEM-MIB-shaped values (sysUpTime, ifInOctets, ifSpeed) as JSON over HTTP, because my lab machine has no snmpd. The OIDs to use with a real `pysnmp` GET are noted in `nocprobe/probes.py`.
 
 ## Problem
 A NOC needs one place that answers three questions: what's down right now, what's degrading (latency, flapping, saturation), and what our uptime is against the SLO. It also needs alerts that don't page on a single dropped probe. This project is a small Prometheus exporter that runs TCP, HTTP, ICMP and SNMP-style probes, plus alert rules **unit-tested with promtool**, a Grafana dashboard, and a live status page.
@@ -43,7 +43,7 @@ docker compose up --build          # + Grafana on :3000 (dashboard provisioned)
 | InterfaceSaturated | dist-sw-02 | **pending** at 872.7 Mbps (87%) | yes, but hadn't passed `for: 30s` after the 1-minute rate warm-up when the run ended |
 | (none) | core-sw-01 | healthy, 100% | yes |
 
-- **ICMP** shows `ping_unavailable`. The box has no `ping` binary and raw sockets need root, so the probe reports the error instead of faking an "up". The alert rules exclude `type="icmp"` for that reason.
+- **ICMP** shows `ping_unavailable`. My lab machine has no `ping` binary and raw sockets need root, so the probe reports the error instead of faking an "up". The alert rules exclude `type="icmp"` for that reason.
 - **A bug the lab caught:** my first simulator added 120 MB per poll, which is only about 192 Mbps (log in `results/lab_run_v1_sim_bug.log`), so saturation never triggered. I fixed the math to about 960 Mbps.
 
 **Not run:** Grafana and Docker Compose (no Docker). The dashboard JSON is provisioned but I never saw it rendered.
