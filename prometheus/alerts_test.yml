@@ -1,0 +1,38 @@
+rule_files: [alerts.yml]
+evaluation_interval: 5s
+tests:
+  - interval: 5s
+    input_series:
+      - series: 'noc_probe_up{target="dr-rtr-01",type="tcp",site="dr"}'
+        values: '0x20'
+      - series: 'noc_probe_up{target="core",type="tcp",site="dc1"}'
+        values: '1x20'
+      - series: 'noc_probe_up{target="ap",type="http",site="b"}'
+        values: '1 1 0 0 1 1 0 0 1 1'
+      - series: 'noc_device_uptime_seconds{target="fw"}'
+        values: '100 105 110 2 7 12'
+      - series: 'noc_if_in_octets{target="sw",ifname="Gi0/1"}'
+        values: '0+600000000x20'      # 600 MB per 5 s = 960 Mbps
+      - series: 'noc_if_speed_bits{target="sw",ifname="Gi0/1"}'
+        values: '1000000000x20'
+    alert_rule_test:
+      - {eval_time: 20s, alertname: TargetDown, exp_alerts: []}
+      - eval_time: 40s
+        alertname: TargetDown
+        exp_alerts:
+          - exp_labels: {severity: critical, target: dr-rtr-01, type: tcp, site: dr}
+            exp_annotations: {summary: "dr-rtr-01 (dr) down"}
+      - eval_time: 45s
+        alertname: TargetFlapping
+        exp_alerts:
+          - exp_labels: {severity: warning, target: ap, type: http, site: b}
+            exp_annotations: {summary: "ap state changed 4 times in 2m"}
+      - eval_time: 25s
+        alertname: DeviceRebooted
+        exp_alerts:
+          - exp_labels: {severity: warning, target: fw}
+            exp_annotations: {summary: "fw sysUpTime reset (reboot)"}
+      - eval_time: 95s
+        alertname: InterfaceSaturated
+        exp_alerts:
+          - exp_labels: {severity: critical, target: sw, ifname: Gi0/1}

@@ -1,0 +1,31 @@
+groups:
+  - name: noc
+    rules:
+      - record: noc:if_in_bps:rate1m
+        expr: rate(noc_if_in_octets[1m]) * 8
+      - alert: TargetDown
+        expr: noc_probe_up{type!="icmp"} == 0
+        for: 30s
+        labels: {severity: critical}
+        annotations: {summary: "{{ $labels.target }} ({{ $labels.site }}) down"}
+      - alert: TargetFlapping
+        expr: changes(noc_probe_up[2m]) >= 2
+        labels: {severity: warning}
+        annotations: {summary: "{{ $labels.target }} state changed {{ $value }} times in 2m"}
+      - alert: HighLatency
+        expr: noc_probe_latency_seconds > 0.5
+        for: 30s
+        labels: {severity: warning}
+        annotations: {summary: "{{ $labels.target }} latency {{ $value | humanizeDuration }}"}
+      - alert: UptimeBelowSLO
+        expr: noc_probe_uptime_ratio{type!="icmp"} < 0.99
+        for: 1m
+        labels: {severity: warning}
+      - alert: DeviceRebooted
+        expr: resets(noc_device_uptime_seconds[2m]) > 0
+        labels: {severity: warning}
+        annotations: {summary: "{{ $labels.target }} sysUpTime reset (reboot)"}
+      - alert: InterfaceSaturated
+        expr: noc:if_in_bps:rate1m / on(target, ifname) noc_if_speed_bits > 0.8
+        for: 30s
+        labels: {severity: critical}

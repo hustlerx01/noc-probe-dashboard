@@ -1,0 +1,9 @@
+targets:
+  - {name: core-sw-01,   type: snmp, target: "http://127.0.0.1:9101", site: dc1}
+  - {name: core-sw-01-mgmt, type: tcp, target: "127.0.0.1:9101", site: dc1}
+  - {name: wan-rtr-01,   type: http, target: "http://127.0.0.1:9102/", site: dc1, timeout: 2}
+  - {name: branch-ap-07, type: http, target: "http://127.0.0.1:9103/", site: branch-pune}
+  - {name: edge-fw-01,   type: snmp, target: "http://127.0.0.1:9104", site: dc1}
+  - {name: dist-sw-02,   type: snmp, target: "http://127.0.0.1:9105", site: dc1}
+  - {name: dr-rtr-01,    type: tcp,  target: "127.0.0.1:9106", site: dr-mumbai}
+  - {name: gateway-icmp, type: icmp, target: "127.0.0.1", site: dc1}

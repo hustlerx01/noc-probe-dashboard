@@ -1,0 +1,170 @@
+{
+ "title": "NOC Overview",
+ "uid": "noc",
+ "refresh": "10s",
+ "time": {
+  "from": "now-30m",
+  "to": "now"
+ },
+ "schemaVersion": 39,
+ "panels": [
+  {
+   "id": 1,
+   "title": "Targets down",
+   "type": "stat",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 0,
+    "w": 6,
+    "h": 4
+   },
+   "targets": [
+    {
+     "expr": "count(noc_probe_up{type!=\"icmp\"} == 0) or vector(0)",
+     "legendFormat": "{{target}}",
+     "refId": "A"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {}
+   }
+  },
+  {
+   "id": 2,
+   "title": "Up/Down by target",
+   "type": "state-timeline",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "x": 6,
+    "y": 0,
+    "w": 18,
+    "h": 8
+   },
+   "targets": [
+    {
+     "expr": "noc_probe_up",
+     "legendFormat": "{{target}}",
+     "refId": "A"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {}
+   }
+  },
+  {
+   "id": 3,
+   "title": "Probe latency",
+   "type": "timeseries",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 8,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "expr": "noc_probe_latency_seconds",
+     "legendFormat": "{{target}}",
+     "refId": "A"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "s"
+    }
+   }
+  },
+  {
+   "id": 4,
+   "title": "Uptime (rolling)",
+   "type": "bargauge",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 8,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "expr": "noc_probe_uptime_ratio",
+     "legendFormat": "{{target}}",
+     "refId": "A"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percentunit"
+    }
+   }
+  },
+  {
+   "id": 5,
+   "title": "Interface utilisation",
+   "type": "timeseries",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 16,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "expr": "noc:if_in_bps:rate1m / on(target,ifname) noc_if_speed_bits",
+     "legendFormat": "{{target}} {{ifname}}",
+     "refId": "A"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percentunit"
+    }
+   }
+  },
+  {
+   "id": 6,
+   "title": "Device uptime",
+   "type": "table",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 16,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "expr": "noc_device_uptime_seconds",
+     "legendFormat": "{{target}}",
+     "refId": "A"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "s"
+    }
+   }
+  }
+ ]
+}
