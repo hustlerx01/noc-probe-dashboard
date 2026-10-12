@@ -1,0 +1,20 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: pip install -r requirements.txt
+      - run: pytest -q
+      - name: promtool rule unit tests
+        run: |
+          curl -sSL https://github.com/prometheus/prometheus/releases/download/v2.54.1/prometheus-2.54.1.linux-amd64.tar.gz | tar xz
+          sudo cp prometheus-2.54.1.linux-amd64/{promtool,prometheus} /usr/local/bin/
+          promtool check rules prometheus/alerts.yml
+          promtool test rules prometheus/alerts_test.yml
+      - name: live lab (90 s)
+        run: DUR=90 lab/run_lab.sh
+      - run: docker build -t noc-exporter .

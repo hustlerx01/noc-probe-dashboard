@@ -1,0 +1,21 @@
+# network_mode host so 127.0.0.1 targets match targets.yml (Linux only)
+services:
+  devices:
+    build: .
+    command: python lab/devices.py
+    network_mode: host
+  exporter:
+    build: .
+    network_mode: host
+    depends_on: [devices]
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    network_mode: host
+    volumes: ["./prometheus:/etc/prometheus:ro"]
+  grafana:
+    image: grafana/grafana:11.2.0
+    network_mode: host
+    environment: {GF_AUTH_ANONYMOUS_ENABLED: "true"}
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
